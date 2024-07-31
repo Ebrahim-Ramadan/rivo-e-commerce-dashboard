@@ -2,20 +2,29 @@
 import Image from "next/image";
 import logo from '@/public/logo.png'
 import { useState } from "react";
+import { Dashboard } from "../RealShit/Dashboard";
 
-export const Login = () => {
+export const MiddleWare = () => {
   const [Username, setUsername] = useState('');
   const [Password, setPassword] = useState('');
+  const [loggedIN, setloggedIN] = useState(false);
+
 
 const loginUser = async (email, password, e) => {
   e.preventDefault();
     if (email ==process.env.NEXT_PUBLIC_USERNAME && password == process.env.NEXT_PUBLIC_PASSWORD) {
         console.log('login success')
+        setloggedIN(true)
     }
 }
   return (
    
-    <div className=" min-h-screen  flex justify-center flex-col items-center  gap-y-2">
+   <div className="w-full">
+    {loggedIN ? <Dashboard/> : 
+    
+    
+    
+     <div className=" min-h-screen w-full flex justify-center flex-col items-center  gap-y-2">
     <Image
     src={logo}
     width={200}
@@ -68,5 +77,7 @@ const loginUser = async (email, password, e) => {
     </form>
       
     </div>
+}
+   </div>
   );
 };
