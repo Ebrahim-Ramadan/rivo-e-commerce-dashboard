@@ -3,24 +3,40 @@ import Image from "next/image";
 import logo from '@/public/logo.png'
 import { useState } from "react";
 import { Dashboard } from "../RealShit/Dashboard";
+import { getAllOrders } from "@/lib/utils";
+import LoadingDots from "../LoadingDots";
 
 export const MiddleWare = () => {
   const [Username, setUsername] = useState('');
   const [Password, setPassword] = useState('');
   const [loggedIN, setloggedIN] = useState(false);
+  const [orders, setorders] = useState([]);
+  const [loading, setloading] = useState(false);
 
 
 const loginUser = async (email, password, e) => {
   e.preventDefault();
+  setloading(true)
     if (email ==process.env.NEXT_PUBLIC_USERNAME && password == process.env.NEXT_PUBLIC_PASSWORD) {
         console.log('login success')
         setloggedIN(true)
+        const orders=await getAllOrders();
+        console.log('orders', orders)
+        setorders(orders)
     }
+  setloading(false)
+
 }
   return (
    
    <div className="w-full">
-    {loggedIN ? <Dashboard/> : 
+    {loggedIN && loading &&   (
+     <div className="flex items-center justify-center w-full h-screen">
+     <LoadingDots/>
+     
+     </div>
+    )}
+    {loggedIN ? <Dashboard orders={orders&&orders} loading={loading}/> : 
     
     
     
