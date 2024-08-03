@@ -105,12 +105,12 @@ export const Dashboard = ({ orders, loading }) => {
           
           <div className="flex justify-end items-center mb-4">
             <div className="flex items-center gap-2">
-              {order.source_data?.type === 'wallet' ? (
+              {orderData.source_data?.type === 'wallet' ? (
                 <Image src={mobile} alt="card logo" className="w-6 h-6" width={40} height={40} />
               ) : (
                 <Image src={visa} alt="card logo" className="w-6 h-6" width={40} height={40} />
               )}
-              <span>Ending in {order.source_data?.phone_number?.slice(-4)}</span>
+              <span>Ending in {orderData.source_data?.phone_number?.slice(-4)}</span>
             </div>
           </div>
           
