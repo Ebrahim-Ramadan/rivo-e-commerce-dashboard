@@ -51,14 +51,14 @@ export const Dashboard = ({ orders, loading }) => {
 </div>
   }
   return (
-    <div>
+    <div className=' flex flex-col gap-4'>
       {orders.map((order) => {
           const orderId = Object.keys(order)[0];
           const orderData = order[orderId];
 
         return (  <div key={order.id} className={`flex flex-col md:flex-row gap-6 border border-white/20 p-4 rounded-lg`}>
         <div className="rounded-lg shadow-md flex-grow">
-          <h2 className="text-xl font-semibold mb-1">Order ID {order.id}</h2>
+          <h2 className="text-xl font-semibold mb-1">Order Doc ID {order.id}</h2>
           <p className="mb-6">Placed on {formatCreatedAt(order.createdAt)}</p>
           
           <h3 className="text-lg font-semibold mb-2">Delivery Details</h3>
