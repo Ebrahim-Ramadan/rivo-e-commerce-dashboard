@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import mobile from '@/public/assets/mobile.svg';
 import visa from '@/public/assets/visa.svg';
 import Image from "next/image";
-import { deleteOrderById, getProductDetails } from '@/lib/utils';
+import { deleteOrderById, getProductDetails, Shipping_costs } from '@/lib/utils';
 import LoadingDots from '../LoadingDots';
 import { useRouter, redirect } from 'next/navigation';
 import { toast } from 'react-hot-toast';
@@ -99,28 +99,34 @@ export const Dashboard = ({ orders, refetchOrders }) => {
             <div className="rounded-lg shadow-md w-full md:w-80">
               <h3 className="text-lg font-semibold mb-4">Order invoice</h3>
               <div className="space-y-2 mb-4">
-                <div className="flex justify-between font-bold">
-                  <span>Order total</span>
+                <div className="flex justify-between ">
+                  <span> SubTotal</span>
                   <span>EGP {calculateTotalPrice(order.items).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between font-bold">
+                  <span>Total ({order.shipping_data?.last_name} fees)</span>
+                  <span>EGP {calculateTotalPrice(order.items, order.shipping_data?.last_name).toFixed(2)}</span>
                 </div>
               </div>
 
               <div className="flex justify-end items-center mb-4">
-                <div className="flex items-center gap-2">
-                  {orderData.source_data?.type === 'wallet' ? (
-                    <Image src={mobile} alt="card logo" className="w-6 h-6" width={40} height={40} />
-                  ) : (
-                    <Image src={visa} alt="card logo" className="w-6 h-6" width={40} height={40} />
-                  )}
-                  <span>Ending in {orderData.source_data?.phone_number?.slice(-4)}</span>
-                </div>
+              {order.shipping_data?.building == 'pay-on-delivery'?"paying on delivery":
+               <div className="flex items-center gap-2">
+               {orderData.source_data?.type == 'wallet' ? 
+             <Image src={mobile} alt="card logo" className="w-6 h-6" width={40} height={40} />
+             : 
+             <Image src={visa} alt="card logo" className="w-6 h-6" width={40} height={40} />
+             }
+               <span>Ending in {orderData.source_data?.pan?.slice(-4)}</span>
+             </div>
+              }
               </div>
 
-              <h3 className="text-lg font-semibold mb-2">Delivery address (Home)</h3>
-              <p className="mb-1 text-sm ">{orderData.shipping_data?.first_name} {orderData.shipping_data?.email}</p>
-              <p className="mb-1">{orderData.shipping_data?.street}, {orderData.shipping_data?.city}, {orderData.shipping_data?.country}</p>
+              <h3 className="text-xl font-semibold mb-2">Delivery address (Home)</h3>
+              <p className="mb-1 text-lg ">{order.shipping_data?.first_name} {order.shipping_data?.email}</p>
+              <p className="mb-1">{order.shipping_data?.street}, {order.shipping_data?.city},{order.shipping_data?.last_name}, {order.shipping_data?.country}</p>
               <p className="flex items-center">
-                {orderData.shipping_data?.phone_number}
+                {order.shipping_data?.phone_number}
                 <span className="ml-2 text-green-600 text-sm">Verified</span>
               </p>
             </div>
@@ -159,9 +165,16 @@ function formatCreatedAt(timestamp) {
   });
 }
 
-const calculateTotalPrice = (items) => {
+const getShippingCost = (governorate) => {
+  const shippingCost = Shipping_costs.find(cost => cost.hasOwnProperty(governorate));
+  return shippingCost ? parseFloat(shippingCost[governorate]) : 0;
+};
+
+const calculateTotalPrice = (items, governorate) => {
   if (!items || !Array.isArray(items)) {
     return 0;
   }
-  return items.reduce((total, item) => total + (item.price || 0) * (item.quantity || 0), 0);
+  const itemsTotal = items.reduce((total, item) => total + (item.price || 0) * (item.quantity || 0), 0);
+  const shippingCost = getShippingCost(governorate);
+  return itemsTotal + shippingCost;
 };
