@@ -6,6 +6,7 @@ import Image from "next/image";
 import { deleteOrderById, getProductDetails } from '@/lib/utils';
 import LoadingDots from '../LoadingDots';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 export const Dashboard = ({ orders, loading, setloading }) => {
   const [productDetails, setProductDetails] = useState({});
 
@@ -129,8 +130,12 @@ export const Dashboard = ({ orders, loading, setloading }) => {
             setloading(true)
             const deletedID = await deleteOrderById(order.id)
             if(deletedID){
+              toast.success('Order deleted successfully')
               setloading(true)
               router.refresh()
+            }
+            else{
+              toast.error('Something went wrong')
             }
           }}
           >Delete Order</button>
