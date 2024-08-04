@@ -27,16 +27,23 @@ const loginUser = async (email, password, e) => {
   setloading(false)
 
 }
+
   return (
    
    <div className="w-full">
     {loggedIN && loading &&   (
-     <div className="flex items-center justify-center w-full h-screen">
+     <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black/50">
      <LoadingDots/>
      
      </div>
     )}
-    {loggedIN ? <Dashboard orders={orders&&orders} loading={loading}/> : 
+    {loggedIN && orders.length==0 &&  !loading&& (
+     <div className="flex items-center justify-center w-full h-screen">
+     no active orders right now
+     
+     </div>
+    )}
+    {loggedIN ? <Dashboard orders={orders&&orders} loading={loading} setloading={setloading} getAllOrders={getAllOrders}/> : 
     
     
     

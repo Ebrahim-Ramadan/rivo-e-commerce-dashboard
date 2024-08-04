@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react';
 import mobile from '@/public/assets/mobile.svg';
 import visa from '@/public/assets/visa.svg';
 import Image from "next/image";
-import { getProductDetails } from '@/lib/utils';
+import { deleteOrderById, getProductDetails } from '@/lib/utils';
 import LoadingDots from '../LoadingDots';
-
-export const Dashboard = ({ orders, loading }) => {
+import { useRouter } from 'next/navigation';
+export const Dashboard = ({ orders, loading, setloading }) => {
   const [productDetails, setProductDetails] = useState({});
 
+  const router = useRouter();
   useEffect(() => {
     const fetchProductDetails = async (orders) => {
       // Flatten all items from each order into a single array of promises
@@ -122,7 +123,20 @@ export const Dashboard = ({ orders, loading }) => {
             <span className="ml-2 text-green-600 text-sm">Verified</span>
           </p>
         </div>
+        <div className="flex justify-end md:block">
+          <button className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-xl"
+          onClick={async() => {
+            setloading(true)
+            const deletedID = await deleteOrderById(order.id)
+            if(deletedID){
+              setloading(true)
+              router.refresh()
+            }
+          }}
+          >Delete Order</button>
+        </div>
       </div>)
+    
       })}
     </div>
   );
