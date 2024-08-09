@@ -8,7 +8,7 @@ import LoadingDots from '../LoadingDots';
 import { useRouter, redirect } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
-export const Dashboard = ({ orders, refetchOrders }) => {
+export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
   const [productDetails, setProductDetails] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -138,7 +138,12 @@ export const Dashboard = ({ orders, refetchOrders }) => {
                   if (deletedID) {
                     toast.success('Order deleted successfully');
                     setLoading(false);
-                    await refetchOrders();
+                    if (fromSearch) {
+                      router.refresh()
+                    }
+                    else{
+                      await refetchOrders();
+                    }
                   } else {
                     toast.error('Something went wrong');
                     setLoading(false);  // Ensure to set loading to false in case of error
