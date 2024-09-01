@@ -170,7 +170,7 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
                     setLoading(true);
                     const deletedID = await markOrderAsDone(order.id);
                     if (deletedID) {
-                      toast.success('Order deleted successfully');
+                      toast.success('Order marked as Done successfully');
                       setLoading(false);
                       if (fromSearch) {
                         router.refresh()
