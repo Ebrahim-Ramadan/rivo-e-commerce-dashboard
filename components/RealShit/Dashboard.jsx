@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import mobile from '@/public/assets/mobile.svg';
 import visa from '@/public/assets/visa.svg';
 import Image from "next/image";
-import { deleteOrderById, getProductDetails, Shipping_costs } from '@/lib/utils';
+import { markOrderAsDone, getProductDetails, Shipping_costs } from '@/lib/utils';
 import LoadingDots from '../LoadingDots';
 import { useRouter, redirect } from 'next/navigation';
 import { toast } from 'react-hot-toast';
@@ -14,7 +14,7 @@ const additionalsIDs = [
 export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
   const [productDetails, setProductDetails] = useState({});
   const [loading, setLoading] = useState(false);
-
+  const [activeTab, setActiveTab] = useState('orders');
   const router = useRouter();
   
   useEffect(() => {
@@ -54,16 +54,33 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
     );
   }
 
+  const filteredOrders = orders.filter(order => 
+    activeTab === 'orders' ? order.status =='Received' : order.status =='Done'
+  );
   return (
     <div className='flex flex-col gap-4'>
-      {orders.map((order) => {
+      <div className="flex mb-4">
+        <button
+          className={`px-4 py-2 mr-2 rounded-lg ${activeTab === 'orders' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+          onClick={() => setActiveTab('orders')}
+        >
+          Recieved
+        </button>
+        <button
+          className={`px-4 py-2 rounded-lg ${activeTab === 'done' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+          onClick={() => setActiveTab('done')}
+        >
+          Done
+        </button>
+      </div>
+      {filteredOrders.map((order) => {
         const orderId = Object.keys(order)[0];
         const orderData = order[orderId];
 
         return (
           <div key={order.id} className={`flex flex-col md:flex-row gap-6 border border-white/20 p-4 rounded-lg`}>
             <div className="rounded-lg shadow-md flex-grow">
-              <h2 className="text-xl font-semibold mb-1">Order Doc ID {order.id}</h2>
+              <h2 className="text-xl font-semibold mb-1 truncate">Order Doc ID {order.id}</h2>
               <p className="mb-6">Placed on {formatCreatedAt(order.createdAt)}</p>
 
               <h3 className="text-lg font-semibold mb-2">Delivery Details</h3>
@@ -138,34 +155,40 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
               </div>
 
               <h3 className="text-xl font-semibold mb-2">Delivery address (Home)</h3>
-              <p className="mb-1 text-lg ">{order.shipping_data?.first_name} {order.shipping_data?.email}</p>
+              <p className="mb-1 truncate">{order.shipping_data?.first_name} {order.shipping_data?.email}</p>
               <p className="mb-1">{order.shipping_data?.street}, {order.shipping_data?.city},{order.shipping_data?.last_name}, {order.shipping_data?.country}</p>
               <p className="flex items-center">
                 {order.shipping_data?.phone_number}
                 <span className="ml-2 text-green-600 text-sm">Verified</span>
               </p>
             </div>
-            <div className="flex justify-end md:block">
-              <button className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-xl"
-                onClick={async () => {
-                  setLoading(true);
-                  const deletedID = await deleteOrderById(order.id);
-                  if (deletedID) {
-                    toast.success('Order deleted successfully');
-                    setLoading(false);
-                    if (fromSearch) {
-                      router.refresh()
+            
+                { activeTab === 'orders' &&
+                <div className="flex justify-end md:block">
+                <button className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-xl"
+                  onClick={async () => {
+                    setLoading(true);
+                    const deletedID = await markOrderAsDone(order.id);
+                    if (deletedID) {
+                      toast.success('Order deleted successfully');
+                      setLoading(false);
+                      if (fromSearch) {
+                        router.refresh()
+                      }
+                      else{
+                        await refetchOrders();
+                      }
+                    } else {
+                      toast.error('Something went wrong');
+                      setLoading(false);  // Ensure to set loading to false in case of error
                     }
-                    else{
-                      await refetchOrders();
-                    }
-                  } else {
-                    toast.error('Something went wrong');
-                    setLoading(false);  // Ensure to set loading to false in case of error
-                  }
-                }}
-              >Delete Order</button>
+                  }}
+                >
+                  Mark as Done
+                  </button>
             </div>
+                  }
+                
           </div>
         );
       })}
