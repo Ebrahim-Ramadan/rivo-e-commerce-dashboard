@@ -5,13 +5,15 @@ import visa from '@/public/assets/visa.svg';
 import Image from "next/image";
 import { markOrderAsDone, getProductDetails, Shipping_costs } from '@/lib/utils';
 import LoadingDots from '../LoadingDots';
-import { useRouter, redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
+import { revalidation } from '@/lib/actions';
 const additionalsIDs = [
   '726GjxFlSzV2jLMtJ1mH','OwOnnRkyUjCALgDgkieM','okyhnzZvPO4v4UIHOqxG','JaDJO9CeY4rovchCyvjm'
 ]
 
 export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
+  console.log('orders', orders);
   const [productDetails, setProductDetails] = useState({});
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('orders');
@@ -59,6 +61,7 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
   );
   return (
     <div className='flex flex-col gap-4'>
+      
       <div className="flex mb-4">
         <button
           className={`px-4 py-2 mr-2 rounded-lg ${activeTab === 'orders' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
@@ -73,6 +76,9 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
           Done
         </button>
       </div>
+      <div className='flex justify-end items-center w-full'>
+{filteredOrders.length}
+      </div>
       {filteredOrders.map((order) => {
         const orderId = Object.keys(order)[0];
         const orderData = order[orderId];
@@ -80,7 +86,7 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
         return (
           <div key={order.id} className={`flex flex-col md:flex-row gap-6 border border-white/20 p-4 rounded-lg`}>
             <div className="rounded-lg shadow-md flex-grow">
-              <h2 className="text-xl font-semibold mb-1 truncate">Order Doc ID {order.id}</h2>
+              <h2 className="text-xl font-semibold mb-1">Order Doc ID {order.id}</h2>
               <p className="mb-6">Placed on {formatCreatedAt(order.createdAt)}</p>
 
               <h3 className="text-lg font-semibold mb-2">Delivery Details</h3>
@@ -172,12 +178,14 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
                     if (deletedID) {
                       toast.success('Order marked as Done successfully');
                       setLoading(false);
-                      if (fromSearch) {
-                        router.refresh()
-                      }
-                      else{
-                        await refetchOrders();
-                      }
+                      revalidation()
+                      // revalidatePath('/')
+                      // if (fromSearch) {
+                      //   router.refresh()
+                      // }
+                      // else{
+                      //   await refetchOrders();
+                      // }
                     } else {
                       toast.error('Something went wrong');
                       setLoading(false);  // Ensure to set loading to false in case of error
