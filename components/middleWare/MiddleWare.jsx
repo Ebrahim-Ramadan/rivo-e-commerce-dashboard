@@ -12,6 +12,8 @@ export const MiddleWare = () => {
   const [loggedIN, setloggedIN] = useState(false);
   const [orders, setorders] = useState([]);
   const [loading, setloading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const loginUser = async (email, password, e) => {
     e.preventDefault();
@@ -25,10 +27,26 @@ export const MiddleWare = () => {
   };
 
   const refetchOrders = async () => {
-    const orders = await getAllOrders();
+    const {orders, hasMore } = await getAllOrders();
+    console.log('middleware hasMore', hasMore);
     setorders(orders);
+    setHasMore(hasMore);
   };
 
+  const loadMoreOrders = async () => {
+    if (loadingMore || !hasMore) return;
+    
+    setLoadingMore(true);
+    try {
+      const { orders: nextOrders, hasMore: moreAvailable } = await getAllOrders(true);
+      setorders(prevOrders => [...prevOrders, ...nextOrders]);
+      setHasMore(moreAvailable);
+    } catch (error) {
+      console.error('Error loading more orders:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
   return (
     <div className="w-full">
       {loggedIN && loading && (
@@ -42,7 +60,20 @@ export const MiddleWare = () => {
         </div>
       )}
       {loggedIN ? (
-        <Dashboard orders={orders} refetchOrders={refetchOrders} />
+         <>
+         <Dashboard orders={orders} refetchOrders={refetchOrders} />
+         {hasMore && (
+           <div className="flex justify-center mt-4 mb-8">
+             <button 
+               onClick={loadMoreOrders}
+               disabled={loadingMore}
+               className={`${loadingMore?'':'bg-blue-500 hover:bg-blue-700'} text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline disabled:opacity-50`}
+             >
+               {loadingMore ? <LoadingDots /> : 'Load More Orders'}
+             </button>
+           </div>
+         )}
+       </>
       ) : (
         <div className="min-h-screen w-full flex justify-center flex-col items-center gap-y-2">
           <Image
@@ -92,6 +123,7 @@ export const MiddleWare = () => {
           </form>
         </div>
       )}
+
     </div>
   );
 };

@@ -18,7 +18,7 @@ export const Search = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <a href="/" className="text-blue-500 text-sm hover:text-blue-400">← Back to Dashboard</a>
       <p className="text-xl font-bold self-center">Search for an order</p>
       <div className='grid grid-cols-5 w-full gap-2'>

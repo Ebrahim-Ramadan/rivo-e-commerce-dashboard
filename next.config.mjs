@@ -4,7 +4,7 @@ const nextConfig = {
         remotePatterns: [
           {
             protocol: 'https',
-            hostname: 'iili.io',
+            hostname: 'rivo.gallery',
           },
         ],
       },
