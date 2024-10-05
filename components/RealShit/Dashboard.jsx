@@ -168,6 +168,16 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
                 {order.shipping_data?.phone_number}
                 <span className="ml-2 text-green-600 text-sm">Verified</span>
               </p>
+              {order.shipping_data?.country.trim().length >0 &&
+            <p className="flex items-center gap-2">
+            {/* <PhoneIcon size='16'/> */}
+            {order.shipping_data?.country}
+            <span className="ml-2 text-green-600 text-sm">(+)</span>
+
+            
+
+           </p>
+            }
             </div>
             
                 { activeTab === 'orders' &&
