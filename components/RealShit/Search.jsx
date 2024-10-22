@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { checkIfOrderExists } from '@/lib/utils'; 
 import { Dashboard } from './Dashboard';
 import LoadingDots from '../LoadingDots';
+
 export const Search = () => {
   const [orderId, setOrderId] = useState('');
   const [orderData, setOrderData] = useState([]);
