@@ -41,3 +41,11 @@ body {
   height: 0;
   border-radius: 0;
 }
+
+.myass2024 {
+  paint-order: stroke fill;
+  display: inline-block;
+  letter-spacing: -0.1ch;
+  -webkit-text-stroke:5px rgb(42, 72, 190);
+  text-shadow:0.5px 0.5px 0 rgb(104, 104, 181), 0.5px 0.5px 0 yellow
+}

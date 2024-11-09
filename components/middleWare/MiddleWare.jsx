@@ -76,6 +76,7 @@ export const MiddleWare = () => {
        </>
       ) : (
         <div className="min-h-screen w-full flex justify-center flex-col items-center gap-y-2">
+          <div className="myass2024">HELLO</div>
           <Image
             src={logo}
             width={200}
@@ -83,7 +84,6 @@ export const MiddleWare = () => {
             alt="logo"
             className="w-28"
           />
-          <h1 className='text-3xl font-bold text-white'>Login</h1>
 
           <form onSubmit={(e) => loginUser(Username, Password, e)} className='mt-2'>
             <div className="mb-4">
