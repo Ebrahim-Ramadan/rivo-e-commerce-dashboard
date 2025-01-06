@@ -224,6 +224,7 @@ const calculateTotalPrice = (items, governorate) => {
   if (!items || !Array.isArray(items)) {
     return 0;
   }
+  
   const itemsTotal = items.reduce((total, item) => total + (item.price || 0) * (item.quantity || 0), 0);
   const shippingCost = getShippingCost(governorate);
   return itemsTotal + shippingCost;
