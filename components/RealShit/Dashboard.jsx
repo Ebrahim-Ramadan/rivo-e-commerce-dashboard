@@ -82,12 +82,12 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
       {filteredOrders.map((order) => {
         const orderId = Object.keys(order)[0];
         const orderData = order[orderId];
-
+        console.log('ass', typeof order.created_at);
         return (
           <div key={order.id} className={`flex flex-col md:flex-row gap-6 border border-white/20 p-4 rounded-lg`}>
             <div className="rounded-lg shadow-md flex-grow">
               <h2 className="text-xl font-semibold mb-1">Order Doc ID {order.id}</h2>
-              <p className="mb-6">Placed on {formatCreatedAt(order.createdAt)}</p>
+              <p className="mb-6">Placed on {order.created_at.slice(0, 10)}</p>
 
               <h3 className="text-lg font-semibold mb-2">Delivery Details</h3>
               <p className="text-green-600 mb-4">{order.status} · Confirmed</p>
@@ -214,18 +214,6 @@ export const Dashboard = ({ orders, refetchOrders, fromSearch }) => {
     </div>
   );
 };
-
-function formatCreatedAt(timestamp) {
-  if (!timestamp || !timestamp.seconds) return 'N/A';
-
-  const date = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
-
-  return date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
 
 const getShippingCost = (governorate) => {
   const shippingCost = Shipping_costs.find(cost => cost.hasOwnProperty(governorate));
